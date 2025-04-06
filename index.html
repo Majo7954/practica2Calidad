@@ -1,0 +1,52 @@
+<html>
+  <body>
+    <div id="contenedorDeProyectos">
+      <h1>Crear Proyecto</h1>
+      <form id="formularioCrearProyecto">
+        <label for="tituloDelProyecto">Titulo de proyecto:</label>
+        <input type="text" id="tituloDelProyecto" />
+        <label for="descripcionDelProyecto">Descripcion de proyecto:</label>
+        <textarea id="descripcionDelProyecto" rows="2" cols="50"></textarea><br>
+        <input type="submit" value="Crear Proyecto" id="botonCrearProyecto"/>
+      </form>
+      <div id="listaDeProyectos">
+          <!-- Aquí se mostrarán los proyectos agregados -->
+      </div>
+    </div> 
+
+    <div id="contenedorDeMetricas" style="display: none;">
+      <h1>Metricas del Proyecto</h1>
+      <form id="FormularioAnadirMetrica">
+        <label for="nro_commit">Número de Commit:</label>
+        <input type="number" id="nro_commit" name="nro_commit"><br><br>
+        <label for="cant_pruebas">Cantidad de Pruebas que pasan:</label>
+        <input type="number" id="cant_pruebas" name="cant_pruebas"><br><br>
+        <label for="cant_lineas">Cantidad de Líneas:</label>
+        <input type="number" id="cant_lineas" name="cant_lineas"><br><br>
+        <label for="porc_cobertura">Porcentaje de Cobertura:</label>
+        <input type="number" id="porc_cobertura" name="porc_cobertura"><br><br>
+        <label for="fecha_commit">Escribe la fecha de tu commit:</label>
+        <input type="text" id="fecha_commit" name="fecha_commit"><br><br>
+        <label for="comp_codigo">Selecciona la complejidad de tu codigo:</label>
+        <select id="comp_codigo" name="comp_codigo">
+          <option value="Excelente">Excelente</option>
+          <option value="Bueno">Bueno</option>
+          <option value="Regular">Regular</option>
+          <option value="Deficiente">Deficiente</option>
+        </select>
+        <br><br>
+        <button type="button" id="botonAgregarMetrica">Agregar</button>
+        <button type="button" id="botonVolverAProyectos">Volver a Proyectos</button>
+
+        <input type="file" id="archivoMetricas" />
+        <button type="button" id="botonSubirArchivoMetricas">Subir Archivo Métricas</button>
+        
+      </form>
+      <div id="listaDeMetricas">
+          <!-- Aquí se mostrarán las metricas agregadas -->
+      </div>
+    </div>
+
+    <script type="module" src="./src/presenter.js"></script>
+  </body>
+</html>
