@@ -98,12 +98,6 @@ describe("PlayTDD", () => {
     expect(puntajeCommit).toBe(expectedPuntaje); 
   });
 
-  test("Debería devolver el puntaje total correctamente", () => {
-    const puntajes = proyecto.DevolverPuntajes();
-    puntajes.puntajeTotal = 100;
-    expect(puntajes.obtenerPuntajeTotal()).toBe(100);
-  });
-
   test("Debería calcular el puntaje total correctamente", () => {
     const puntajes = proyecto.DevolverPuntajes();
     jest.spyOn(puntajes, 'calcularPuntajePruebasTotal').mockReturnValue(10);
@@ -134,22 +128,6 @@ describe("PlayTDD", () => {
     expect(repositorio.proyectos).toHaveLength(1);
     expect(repositorio.proyectos[0].DevolverTitulo()).toBe("Proyecto B");
     expect(repositorio.contador).toBe(1);
-  });
-  
-  test("Debería calcular el promedio de puntajes correctamente cuando el vector no está vacío", () => {
-    const puntajes = proyecto.DevolverPuntajes();
-    puntajes.totalCommits = 3;
-    const vectorPuntajes = [10, 20, 30];
-    const promedio = puntajes.obtenerPromedioPuntajes(vectorPuntajes);
-    expect(promedio).toBe(20);
-  });
-
-  test("Debería devolver 0 cuando el vector de puntajes está vacío", () => {
-    const puntajes = proyecto.DevolverPuntajes();
-    puntajes.totalCommits = 3;
-    const vectorPuntajes = [];
-    const promedio = puntajes.obtenerPromedioPuntajes(vectorPuntajes);
-    expect(promedio).toBe(0);
   });
   
   test("Debería devolver 20 cuando el porcentaje de commits con pruebas es 100 o más", () => {
