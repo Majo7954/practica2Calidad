@@ -37,7 +37,7 @@ export class Puntajes {
   eliminarPuntaje(index) {
     if (this.puntajesPruebas[index] > 8) {
       this.commitsConPruebas--;
-    }
+    } 
 
     this.puntajeTotal -= this.puntajesPruebas[index] + this.puntajesLineas[index] + this.puntajesCobertura[index]+this.puntajesFrecuenciaCommits[index]+this.puntajesComplejidadCommits[index]; 
     this.puntajesPruebas.splice(index, 1);
@@ -51,10 +51,6 @@ export class Puntajes {
 
   obtenerPuntajeCommit(index) {
     return this.puntajesPruebas[index] + this.puntajesLineas[index] + this.puntajesCobertura[index] +this.puntajesFrecuenciaCommits[index]+this.puntajesComplejidadCommits[index];
-  }
-
-  obtenerPuntajeTotal() {
-    return this.puntajeTotal;
   }
 
   calcularPuntajeTotal() {
@@ -73,17 +69,14 @@ export class Puntajes {
     return total;
   }
 
-  obtenerPromedioPuntajes(vectorPuntajes){
-    let sumaPuntajes=0;
+  obtenerPromedioPuntajes(vectorPuntajes, totalCommits) {
+    let sumaPuntajes = 0;
     for (let i = 0; i < vectorPuntajes.length; i++) {
       sumaPuntajes += vectorPuntajes[i];
     }
-    console.log("Suma lineas: " + sumaPuntajes)
-    let promedioPuntaje=0;
-    promedioPuntaje=sumaPuntajes/this.totalCommits;
-    return promedioPuntaje;
+    return totalCommits !== 0 ? sumaPuntajes / totalCommits : 0;
   }
-
+ 
   calcularPuntajePruebasTotal() {
     const porcentajeCommitsConPruebas = (this.commitsConPruebas / this.totalCommits) * 100;
     if (porcentajeCommitsConPruebas >= 100) {
@@ -95,7 +88,7 @@ export class Puntajes {
     } else {
       return 8;
     }
-  }
+  }   
 
   obtenerPuntajePruebas(vPruebas) {
     if (vPruebas >= 1) {
@@ -147,6 +140,7 @@ export class Puntajes {
     }
     return sumaDias;
   }
+  
   obtenerPuntajeFrecuenciaCommits(promedioDias)
     {
       if(promedioDias<=2)
@@ -166,6 +160,7 @@ export class Puntajes {
               return 8;
             }
     }
+            
    calcularPromedioFrecuenciaCommits()
    {
      const promedioPuntajeFrecuencia=this.obtenerSumaDiferenciasEnDias(this.totalFechas);
@@ -218,7 +213,7 @@ export class Puntajes {
                 return 8;
               }
     }
-    
+              
     calcularPromedioPuntajeComplejidad(vectorComplejidad)
     {
       const valores = {
@@ -235,6 +230,7 @@ export class Puntajes {
       });
     const promedio = suma / vectorComplejidad.length;
     return promedio 
+    
   }
     calcularPuntajeTotalComplejidadCodigo()
     {
@@ -272,4 +268,4 @@ export class Puntajes {
         return recomendacion;
     }
   }
-  
+   
