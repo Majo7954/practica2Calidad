@@ -11,6 +11,289 @@ describe("PlayTDD", () => {
     proyectosRepositorio = new ProyectoRepositorio();
   });
 
+  test("Debería devolver el título del proyecto", () => {
+    expect(proyecto.DevolverTitulo()).toBe("titulo");
+  });
+
+  test("Debería devolver la descripción del proyecto", () => {
+    expect(proyecto.DevolverDescripcion()).toBe("descripcion");
+  });
+
+  test("Debería devolver las métricas vacías", () => {
+    expect(proyecto.DevolverMetricas()).toEqual([]);
+  });
+
+  test("Debería aumentar la cantidad de commits al añadir métricas", () => {
+    proyecto.AnadirMetricas(1, 5, 200, 80, "2025-04-13", "codigo");
+    expect(proyecto.DevolverCantidadCommits()).toBe(1);
+  });
+
+  test("Debería añadir métricas correctamente", () => {
+    proyecto.AnadirMetricas(1, 5, 200, 80, "2025-04-13", "codigo");
+    const result = proyecto.DevolverMetricas();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual([1, 5, 200, 80, "2025-04-13", "codigo"]);
+  });  
+
+  test("Debería eliminar una métrica correctamente", () => {
+    proyecto.AnadirMetricas(1, 5, 200, 80, "2025-04-13", "codigo");
+    const result = proyecto.eliminarMetrica(0);
+    expect(result).toHaveLength(0);
+  });
+
+  test("Debería devolver un objeto Puntajes al obtener los puntajes", () => {
+    expect(proyecto.DevolverPuntajes()).toBeInstanceOf(Puntajes);
+  });
+
+  test("Debería añadir un puntaje correctamente", () => {
+    proyecto.AnadirPuntuacion(10, 100, 80, "2025-03-13", "media");
+    expect(proyecto.DevolverPuntajes().totalCommits).toBeGreaterThan(0);
+  });
+
+  test("Debería eliminar un puntaje correctamente", () => {
+    proyecto.AnadirPuntuacion(10, 100, 80, "2023-07-13", "media");
+    proyecto.EliminarPuntaje(0);
+    expect(proyecto.DevolverPuntajes().totalCommits).toBe(0);
+  });
+
+  test("Debería obtener un puntaje por commit correctamente", () => {
+    proyecto.AnadirPuntuacion(10, 100, 80, "2025-04-13", "media");
+    const result = proyecto.ObtenerPuntajesCommit(0);
+    expect(result).toBeTruthy();
+  });
+
+  test("Debería incrementar commitsConPruebas cuando vPruebas >= 1", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.agregarPuntaje(1, 200, 85, "2025-04-13", "media");
+    expect(puntajes.commitsConPruebas).toBe(1);
+  });
+
+  test("No debería incrementar commitsConPruebas cuando vPruebas < 1", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.agregarPuntaje(0, 200, 85, "2025-04-13", "media");
+    expect(puntajes.commitsConPruebas).toBe(0);
+  });
+
+  test("Debería decrementar commitsConPruebas cuando el puntaje es mayor a 8", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.agregarPuntaje(10, 200, 85, "2025-04-13", "media");
+    expect(puntajes.commitsConPruebas).toBe(1);
+    puntajes.eliminarPuntaje(0);
+    expect(puntajes.commitsConPruebas).toBe(0);
+  });
+
+  /*test("No debería decrementar commitsConPruebas cuando el puntaje es menor o igual a 8", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.agregarPuntaje(5, 200, 85, "2025-04-13", "media");
+    expect(puntajes.commitsConPruebas).toBe(1);
+    puntajes.eliminarPuntaje(0);
+    expect(puntajes.commitsConPruebas).toBe(1);
+  });*/
+
+  test("Debería devolver el puntaje total de un commit correctamente", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.agregarPuntaje(0, 10, 80,"12/04/2024-08:24","Excelente");
+    const puntajeCommit = proyecto.DevolverPuntajes().obtenerPuntajeCommit(0);
+    const expectedPuntaje = 60; 
+    expect(puntajeCommit).toBe(expectedPuntaje); 
+  });
+
+  test("Debería devolver el puntaje total correctamente", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.puntajeTotal = 100;
+    expect(puntajes.obtenerPuntajeTotal()).toBe(100);
+  });
+
+  test("Debería calcular el puntaje total correctamente", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    jest.spyOn(puntajes, 'calcularPuntajePruebasTotal').mockReturnValue(10);
+    jest.spyOn(puntajes, 'calcularPuntajeTotalLineas').mockReturnValue(20);
+    jest.spyOn(puntajes, 'calcularPuntajeTotalCobertura').mockReturnValue(30);
+    jest.spyOn(puntajes, 'calcularPromedioFrecuenciaCommits').mockReturnValue(40);
+    jest.spyOn(puntajes, 'calcularPuntajeTotalComplejidadCodigo').mockReturnValue(50);
+    const total = puntajes.calcularPuntajeTotal();
+    const expectedTotal = 10 + 20 + 30 + 40 + 50;
+    expect(total).toBe(expectedTotal); 
+  });
+
+  test("Debería agregar un proyecto correctamente y aumentar el contador", () => {
+    const repositorio = new ProyectoRepositorio();
+    expect(repositorio.proyectos).toHaveLength(0);
+    repositorio.AgregarProyecto("Proyecto A", "Descripción del Proyecto A");
+    expect(repositorio.proyectos).toHaveLength(1);
+    expect(repositorio.proyectos[0].DevolverTitulo()).toBe("Proyecto A");
+    expect(repositorio.contador).toBe(1);
+  });
+  
+  test("Debería eliminar un proyecto correctamente y decrementar el contador", () => {
+    const repositorio = new ProyectoRepositorio();
+    repositorio.AgregarProyecto("Proyecto A", "Descripción del Proyecto A");
+    repositorio.AgregarProyecto("Proyecto B", "Descripción del Proyecto B");
+    expect(repositorio.proyectos).toHaveLength(2);
+    repositorio.EliminarProyectoPorTitulo("Proyecto A");
+    expect(repositorio.proyectos).toHaveLength(1);
+    expect(repositorio.proyectos[0].DevolverTitulo()).toBe("Proyecto B");
+    expect(repositorio.contador).toBe(1);
+  });
+  
+  test("Debería calcular el promedio de puntajes correctamente cuando el vector no está vacío", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.totalCommits = 3;
+    const vectorPuntajes = [10, 20, 30];
+    const promedio = puntajes.obtenerPromedioPuntajes(vectorPuntajes);
+    expect(promedio).toBe(20);
+  });
+
+  test("Debería devolver 0 cuando el vector de puntajes está vacío", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.totalCommits = 3;
+    const vectorPuntajes = [];
+    const promedio = puntajes.obtenerPromedioPuntajes(vectorPuntajes);
+    expect(promedio).toBe(0);
+  });
+  
+  test("Debería devolver 20 cuando el porcentaje de commits con pruebas es 100 o más", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.commitsConPruebas = 10;
+    puntajes.totalCommits = 10;
+    const puntaje = puntajes.calcularPuntajePruebasTotal();
+    expect(puntaje).toBe(20);
+  });
+  
+  test("Debería devolver 16 cuando el porcentaje de commits con pruebas es 80 o más", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.commitsConPruebas = 8;
+    puntajes.totalCommits = 10;
+    const puntaje = puntajes.calcularPuntajePruebasTotal();
+    expect(puntaje).toBe(16);
+  });
+
+  test("Debería devolver 12 cuando el porcentaje de commits con pruebas es 60 o más", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.commitsConPruebas = 6;
+    puntajes.totalCommits = 10;
+    const puntaje = puntajes.calcularPuntajePruebasTotal();
+    expect(puntaje).toBe(12);
+  });
+  
+  test("Debería devolver 8 cuando el porcentaje de commits con pruebas es menor a 60", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.commitsConPruebas = 4;
+    puntajes.totalCommits = 10;
+    const puntaje = puntajes.calcularPuntajePruebasTotal();
+    expect(puntaje).toBe(8);
+  });
+
+  test("Debería devolver 20 cuando vPruebas es mayor o igual a 1", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajePruebas(1);
+    expect(puntaje).toBe(20);
+  });
+  
+  test("Debería devolver 8 cuando vPruebas es menor que 1", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajePruebas(0);
+    expect(puntaje).toBe(8);
+  });
+  
+  test("Debería devolver 20 cuando la cantidad de líneas modificadas es menor a 20", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeLineas(15);
+    expect(puntaje).toBe(20);
+  });
+  
+  test("Debería devolver 16 cuando la cantidad de líneas modificadas es entre 20 y 39", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeLineas(30);
+    expect(puntaje).toBe(16);
+  });
+  
+  test("Debería devolver 12 cuando la cantidad de líneas modificadas es entre 40 y 59", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeLineas(50);
+    expect(puntaje).toBe(12);
+  });
+  
+  test("Debería devolver 8 cuando la cantidad de líneas modificadas es mayor o igual a 60", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeLineas(70);
+    expect(puntaje).toBe(8);
+  });
+  
+  test("Debería calcular el puntaje total de líneas correctamente cuando el promedio es válido", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    puntajes.totalLineas = [10, 20, 30];
+    jest.spyOn(puntajes, 'obtenerPromedioPuntajes').mockReturnValue(20);
+    const puntajeTotalLineas = puntajes.calcularPuntajeTotalLineas();
+    expect(puntajeTotalLineas).toBe(16);
+  });
+  
+  test("Debería calcular la diferencia en días correctamente entre dos fechas distintas", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const fecha1 = "12/04/2025-12:00";
+    const fecha2 = "14/04/2025-12:00";   
+    const diferencia = puntajes.calcularDiferenciaEnDias(fecha1, fecha2);
+    expect(diferencia).toBe(2);
+  });
+  
+  test("Debería calcular la suma de las diferencias en días correctamente entre varias fechas", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const vectorFechas = [
+      "12/04/2025-12:00",
+      "14/04/2025-12:00",
+      "16/04/2025-12:00"  
+    ];
+  
+    jest.spyOn(puntajes, 'calcularDiferenciaEnDias').mockImplementation((fecha1, fecha2) => {
+      const [dia1, mes1, anio1, hora1] = fecha1.split(/[-:\/]/);
+      const [dia2, mes2, anio2, hora2] = fecha2.split(/[-:\/]/);
+      
+      const fecha1Obj = new Date(`${anio1}-${mes1}-${dia1}T${hora1}:00:00`);
+      const fecha2Obj = new Date(`${anio2}-${mes2}-${dia2}T${hora2}:00:00`);
+      
+      const diferenciaEnMilisegundos = fecha2Obj - fecha1Obj;
+      return diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+    });
+    const sumaDiferencias = puntajes.obtenerSumaDiferenciasEnDias(vectorFechas);
+    expect(sumaDiferencias).toBe(4);
+  });
+  
+
+  test("Debería devolver 0 cuando el vector de fechas está vacío o tiene solo una fecha", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const vectorFechasVacios = [];
+    const sumaDiferenciasVacios = puntajes.obtenerSumaDiferenciasEnDias(vectorFechasVacios);
+  
+    expect(sumaDiferenciasVacios).toBe(0);
+    const vectorFechasUna = ["12/04/2025-12:00"];
+    const sumaDiferenciasUna = puntajes.obtenerSumaDiferenciasEnDias(vectorFechasUna);
+    expect(sumaDiferenciasUna).toBe(0);
+  });
+  
+  test("Debería devolver 20 cuando el promedio de días entre commits es menor o igual a 2", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeFrecuenciaCommits(2);
+    expect(puntaje).toBe(20);
+  });
+  
+  test("Debería devolver 16 cuando el promedio de días entre commits está entre 2 y 3", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeFrecuenciaCommits(2.5);
+    expect(puntaje).toBe(16);
+  });
+  
+  test("Debería devolver 12 cuando el promedio de días entre commits está entre 3 y 4", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeFrecuenciaCommits(3.5);
+    expect(puntaje).toBe(12);
+  });
+  
+  test("Debería devolver 8 cuando el promedio de días entre commits es mayor a 4", () => {
+    const puntajes = proyecto.DevolverPuntajes();
+    const puntaje = puntajes.obtenerPuntajeFrecuenciaCommits(5);
+    expect(puntaje).toBe(8);
+  });
+
   it('Debería retornar 8 cuando el porcentaje de commits con pruebas es entre 0% y 60%', () => {
     puntajes.totalCommits=5;
     puntajes.commitsConPruebas = 1;
